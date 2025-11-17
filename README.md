@@ -10,4 +10,4 @@ Ubuntu version above 11 as host OS
 
 Make as build system
 
-Bochs as emulator for x86 platform (Other choices are QEMU and Virtual Box)
+QEMU as emulator for x86 platform (Other choices are Bochs - really old interface? and Virtual Box)
