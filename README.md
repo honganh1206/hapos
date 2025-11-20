@@ -1,13 +1,13 @@
 Tech stack:
 
-C language using GCC
+GNU Linker `ld` to link object files to kernel
 
-NASM as the assembler for Assembly
+GNU Assembler (or NASM) to assemble instructions into object files containing machine code
 
-Bash as the scripting language
+GNU Compiler Collection `gcc`
 
-Ubuntu version above 11 as host OS
+C language
 
-Make as build system
+GRUB bootloader
 
-QEMU as emulator for x86 platform (Other choices are Bochs - really old interface? and Virtual Box)
+ELF as executable format
