@@ -1,43 +1,28 @@
-OBJECTS = loader.o kmain.o
+OBJECTS = boot.o kernel.o
+OS_NAME = hapos
 CC = i686-elf-gcc
 CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-LDFLAGS = -T link.ld -melf_i386
+LDFLAGS = -T linker.ld -o ${OS_NAME}.bin -ffreestanding -O2 -nostdlib
 ## GNU Assembler
 AS = i686-elf-as
 ASFLAGS = -f elf
 QEMU = qemu-system-i386
-ISO  = hapos.iso
+ISO  = ${OS_NAME}.iso
 
-QEMU_FLAGS = \
-    -m 32 \
-    -cdrom $(ISO) \
-    -boot d \
-    -display sdl \
-    -rtc base=localtime \
-    -smp 1 \
-    -D qemu.log
+QEMU_FLAGS = -cdrom
 
-all: kernel.elf
-
-kernel.elf:$(OBJECTS)
+link:$(OBJECTS)
 	# Combine object files to executable program
-	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
+	$(CC) $(LDFLAGS) $(OBJECTS) -lgcc
 
-hapos.iso: kernel.elf
-	cp kernel.elf iso/boot/kernel.elf
-	genisoimage -R \
-		-b boot/grub/stage2_eltorito \
-		-no-emul-boot \
-		-boot-load-size 4 \
-		-A hapos \
-		-input-charset utf8 \
-		-quiet \
-		-boot-info-table \
-		-o hapos.iso \
-		iso
+iso:
+	mkdir -p isodir/boot/grub
+	cp ${OS_NAME}.bin isodir/boot/${OS_NAME}.bin
+	cp grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o ${ISO} isodir
 
 run: hapos.iso
-	$(QEMU) $(QEMU_FLAGS)
+	$(QEMU) $(QEMU_FLAGS) $(ISO)
 
 # Refer to pattern rule: https://makefiletutorial.com/
 # Compile
@@ -49,4 +34,4 @@ run: hapos.iso
 	$(AS) $< -o $@
 
 clean:
-	rm -rf *.o kernel.elf hapos.iso
+	rm -rf *.o ${ISO}
